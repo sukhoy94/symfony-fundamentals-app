@@ -8,6 +8,8 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
       - MARIADB_USER=bn_myapp
       - MARIADB_DATABASE=bitnami_myapp
+    ports:
+      - '3306:3306'
   myapp:
     image: docker.io/bitnami/symfony:6.2
     ports:
