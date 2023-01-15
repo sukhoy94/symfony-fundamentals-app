@@ -21,6 +21,9 @@ class Product
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
+    
+    #[ORM\Column]
+    private ?int $price = null;
 
     public function getId(): ?int
     {
