@@ -21,6 +21,9 @@ class Product
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
+    
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
@@ -86,5 +89,12 @@ class Product
     public function setCreatedAtValue(): void
     {
         $this->created_at = new \DateTimeImmutable();
+        $this->setUpdatedAtValue();
+    }
+    
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updated_at = new \DateTimeImmutable();
     }
 }

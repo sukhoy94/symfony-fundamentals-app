@@ -26,8 +26,8 @@ class ProductController extends AbstractController
         $entityManager = $doctrine->getManager();
         
         $product = new Product();
-        $product->setTitle('Keyboard');
-        $product->setPrice(1999);
+        $product->setTitle('Keyboard1');
+        $product->setPrice(1232);
         $product->setDescription('Ergonomic and stylish!');
         
         $errors = $validator->validate($product);
