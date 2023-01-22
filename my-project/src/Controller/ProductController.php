@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -26,9 +27,14 @@ class ProductController extends AbstractController
         $entityManager = $doctrine->getManager();
         
         $product = new Product();
-        $product->setTitle('Keyboard1');
-        $product->setPrice(1232);
+        $product->setTitle('Iphone8');
+        $product->setPrice(2000);
         $product->setDescription('Ergonomic and stylish!');
+        
+        $category = new Category();
+        $category->setName('Phones');
+        
+        $product->setCategory($category);
         
         $errors = $validator->validate($product);
         
@@ -36,10 +42,8 @@ class ProductController extends AbstractController
             return new Response((string) $errors, 400);
         }
         
-        // tell Doctrine you want to (eventually) save the Product (no queries yet)
+        $entityManager->persist($category);
         $entityManager->persist($product);
-        
-        // actually executes the queries (i.e. the INSERT query)
         $entityManager->flush();
         
         return new Response('Saved new product with id ' . $product->getId());
