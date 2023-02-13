@@ -6,7 +6,9 @@ declare(strict_types=1);
 namespace App\Form\Type;
 
 
+use App\Entity\Category;
 use App\Entity\Product;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -23,7 +25,13 @@ class ProductType extends AbstractType
             ->add('title', TextType::class)
             ->add('description', TextareaType::class)
             ->add('price', IntegerType::class)
-            ->add('save', SubmitType::class);
+            ->add('category', EntityType::class, [
+                'class' => Category::class,
+                'choice_label' =>  function ($category) {
+                    return $category->getName();
+                },
+            ])
+            ->add('save', SubmitType::class);                   
     }
     
     public function configureOptions(OptionsResolver $resolver)
