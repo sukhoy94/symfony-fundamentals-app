@@ -7,6 +7,7 @@ In this project I'm trying to test anything in Symfony. Here you will find an ex
 - Validation
 - Doctrine
 - Twig
+- Forms
 - Sending emails
 - Upload files
 - Events
