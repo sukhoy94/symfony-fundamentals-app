@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Form\Type\ProductType;
 use App\Repository\ProductRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -98,5 +100,36 @@ class ProductController extends AbstractController
         $minPrice = 2000;
         $products = $doctrine->getRepository(Product::class)->findAllGreaterThanPrice($minPrice);
         dd($products);
+    }
+    
+    #[Route('/product/form')]
+    public function productForm(Request $request, ManagerRegistry $doctrine)
+    {
+        $product = new Product();
+        $product->setTitle('New title');
+        $product->setDescription('Description');
+        $product->setPrice(200);
+        
+        $form = $this->createForm(ProductType::class, $product);
+    
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $doctrine->getManager();
+            $product = $form->getData();
+            $entityManager->persist($product);
+            $entityManager->flush($product);
+            
+            return $this->redirectToRoute('product_successfully_saved_from_form');
+        }
+    
+        return $this->render('product/form.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    
+    #[Route('/product/form/saved', name: 'product_successfully_saved_from_form')]
+    public function productSuccessfullySavedFromForm(): Response
+    {
+        return new Response('Product was saved');
     }
 }
