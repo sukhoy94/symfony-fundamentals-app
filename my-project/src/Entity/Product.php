@@ -76,7 +76,7 @@ class Product
         return $this;
     }
     
-    public function setPrice(int $price)
+    public function setPrice(int $price): self
     {
         $this->price = $price;
         
@@ -111,5 +111,10 @@ class Product
         $this->category = $category;
 
         return $this;
+    }
+        
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
     }
 }
