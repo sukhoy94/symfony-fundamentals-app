@@ -20,7 +20,7 @@ In this project I'm trying to test anything in Symfony. Here you will find an ex
 - Rest Api
 - JWT
 
-And I hope many many more...
+And I hope many more...
 
 Available documentation for application
 ---------------------------------------------
