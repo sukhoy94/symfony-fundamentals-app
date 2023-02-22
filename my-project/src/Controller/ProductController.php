@@ -8,9 +8,11 @@ use App\Form\Type\ProductType;
 use App\Repository\ProductRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductController extends AbstractController
@@ -24,7 +26,7 @@ class ProductController extends AbstractController
     }
     
     #[Route('/product/create', name: 'app_create_product')]
-    public function createProduct(ManagerRegistry $doctrine, ValidatorInterface $validator)
+    public function createProduct(ManagerRegistry $doctrine, ValidatorInterface $validator): Response
     {
         $entityManager = $doctrine->getManager();
         
@@ -37,7 +39,8 @@ class ProductController extends AbstractController
         $category->setName('Phones');
         
         $product->setCategory($category);
-        
+    
+        /** @var ConstraintViolationList $errors */
         $errors = $validator->validate($product);
         
         if (count($errors) > 0) {
@@ -52,7 +55,7 @@ class ProductController extends AbstractController
     }
     
     #[Route('/product/{id}', name: 'app_product_show', requirements: ['id' => '\d+'])]
-    public function show(int $id, ProductRepository $productRepository)
+    public function show(int $id, ProductRepository $productRepository): Response
     {
         $product = $productRepository
             ->find($id);
@@ -67,13 +70,13 @@ class ProductController extends AbstractController
     }
     
     #[Route('/product/evr/{id}', name: 'app_product_entity_valuer_resolver_show')]
-    public function showWithEntityValueResolver(Product $product)
+    public function showWithEntityValueResolver(Product $product): Response
     {
         return new Response('Check out this great product: ' . $product->getTitle());
     }
     
     #[Route('/product/edit/{id}')]
-    public function update(ManagerRegistry $doctrine, int $id)
+    public function update(ManagerRegistry $doctrine, int $id): RedirectResponse
     {
         $entityManager = $doctrine->getManager();
         
@@ -93,17 +96,9 @@ class ProductController extends AbstractController
             'id' => $product->getId()
         ]);
     }
-    
-    #[Route('/product/test')]
-    public function productTestRoute(ManagerRegistry $doctrine)
-    {
-        $minPrice = 2000;
-        $products = $doctrine->getRepository(Product::class)->findAllGreaterThanPrice($minPrice);
-        dd($products);
-    }
-    
+        
     #[Route('/product/form')]
-    public function productForm(Request $request, ManagerRegistry $doctrine)
+    public function productForm(Request $request, ManagerRegistry $doctrine): RedirectResponse|Response
     {
         $product = new Product();
         $product->setTitle('New title');
@@ -116,10 +111,15 @@ class ProductController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $doctrine->getManager();
             $product = $form->getData();
-            $entityManager->persist($product);
-            $entityManager->flush($product);
             
-            return $this->redirectToRoute('product_successfully_saved_from_form');
+            if (is_object($product)) {
+                $entityManager->persist($product);
+                $entityManager->flush();
+                
+                return $this->redirectToRoute('product_successfully_saved_from_form');
+            }
+                       
+            return $this->redirectToRoute('product_not_saved_from_form');
         }
     
         return $this->render('product/form.html.twig', [
@@ -131,5 +131,11 @@ class ProductController extends AbstractController
     public function productSuccessfullySavedFromForm(): Response
     {
         return new Response('Product was saved');
+    }
+    
+    #[Route('/product/form/error', name: 'product_not_saved_from_form')]
+    public function productNotSavedFromForm(): Response
+    {
+        return new Response('Product was not saved');
     }
 }

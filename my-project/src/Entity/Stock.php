@@ -64,7 +64,7 @@ class Stock
         return $this->price;
     }
 
-    public function setPrice(string $price): self
+    public function setPrice(?int $price): self
     {
         $this->price = $price;
 

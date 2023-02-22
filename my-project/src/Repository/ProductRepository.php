@@ -57,8 +57,16 @@ class ProductRepository extends ServiceEntityRepository
                 p.price ASC'
         )->setParameter('price', $price);
         
-        // returns an array of Product objects
-        return $query->getResult();
+        $queryResultData = (array) $query->getResult();
+        $products = [];
+        
+        foreach ($queryResultData as $item) {
+            if ($item instanceof Product) {
+                $products[] = $item;
+            }
+        }
+        
+        return $products;
     }
 
 //    /**
