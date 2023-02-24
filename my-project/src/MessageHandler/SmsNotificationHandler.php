@@ -3,11 +3,12 @@
 namespace App\MessageHandler;
 
 use App\Message\SmsNotification;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-final class SmsNotificationHandler implements MessageHandlerInterface
+#[AsMessageHandler]
+final class SmsNotificationHandler
 {
-    public function __invoke(SmsNotification $message)
+    public function __invoke(SmsNotification $message): void
     {
         dd($message);
     }

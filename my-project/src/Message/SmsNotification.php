@@ -4,7 +4,7 @@ namespace App\Message;
 
 final class SmsNotification
 {
-     private $name;
+     private string $name;
 
      public function __construct(string $name)
      {
